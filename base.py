@@ -103,6 +103,7 @@ class Tiling:
 
         self.depth = depth 
         self.mirror = mirror
+        self.scale = scale
 
         self._create(depth, mirror)
        
@@ -118,12 +119,12 @@ class Tiling:
         if mirror:
             self.tiling.extend([tile.mirror() for tile in self.tiling])
 
-    def to_svg(self, filepath, dotted=False, width=0.005, scale=100, margin=1.05, fill_color="white", stroke_color="black", radius=.0005):
-        stroke_width = str(PSI ** self.depth * scale * width)
+    def to_svg(self, filepath, dotted=False, width=0.005, margin=1.05, fill_color="white", stroke_color="black", radius=.0005):
+        stroke_width = str(PSI ** self.depth * self.scale * width)
 
         # Create viewport
-        xmin = ymin = - scale * margin
-        width =  height = 2 * scale * margin
+        xmin = ymin = - self.scale * margin
+        width =  height = 2 * self.scale * margin
         viewbox ='{} {} {} {}'.format(xmin, ymin, width, height)
 
         svg = ['<?xml version="1.0" encoding="utf-8"?>']   
@@ -145,13 +146,14 @@ class Tiling:
         svg.append('</g>\n</svg>')
         svg = '\n'.join(svg)
 
+        filepath = "{}_{}_{}".format(filepath, self.depth, width)
         with open(filepath, 'w') as fo:
             fo.write(svg)
 
 
 if __name__ == "__main__":
-    t1 = Tiling(depth=8)
-    t1.to_svg("output/rose.svg", fill_color="pink", dotted=False, width=0.04)
+    t1 = Tiling(initial="hexagon", depth=8, scale=400)
+    t1.to_svg("output/rose", fill_color="pink", dotted=True, width=0.4)
 
     # print_svg("penrose_2_3.svg", intial_tiling=t2, depth=2, base_width=.3)
     # print_svg_dotted("penrose_dotted_9_3.svg", intial_tiling=t2, scale=scale, depth=9, base_width=.05)
